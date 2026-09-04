@@ -9,9 +9,13 @@ const ROLES = {
   CASHIER: 'cashier',
 };
 
+// Roles allowed for new user registration (Admin role cannot be registered)
+const REGISTRABLE_ROLES = [ROLES.INVENTORY_MANAGER, ROLES.CASHIER];
+
 const ALL_ROLES = Object.values(ROLES);
 
 module.exports = {
   ROLES,
   ALL_ROLES,
+  REGISTRABLE_ROLES,
 };

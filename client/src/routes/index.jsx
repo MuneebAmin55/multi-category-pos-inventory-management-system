@@ -22,6 +22,7 @@ import { ROLES } from '@/constants/roles';
 
 // ── Lazy-Loaded Application Pages ──
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const RegistrationPage = lazy(() => import('@/pages/RegistrationPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const POSPage = lazy(() => import('@/pages/pos/POSPage'));
@@ -56,6 +57,11 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LazyPage Component={LoginPage} />,
+  },
+
+  {
+    path: '/register',
+    element: <LazyPage Component={RegistrationPage} />,
   },
 
   // ── Protected Application Shell ──

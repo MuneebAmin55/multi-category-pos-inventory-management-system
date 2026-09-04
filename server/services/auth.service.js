@@ -5,6 +5,7 @@
 
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { REGISTRABLE_ROLES, ROLES } = require('../constants/roles.constant');
 const jwtConfig = require('../config/jwt.config');
 const ApiError = require('../utils/apiError');
 
@@ -33,6 +34,22 @@ const generateToken = (user) => {
  * @returns {Promise<{user: Object, token: string}>}
  */
 const registerUser = async ({ name, email, password, role }) => {
+  // ────────────────────────────────────────────────────────────────────
+  // Security: Prevent Admin role registration
+  // ────────────────────────────────────────────────────────────────────
+  if (role === ROLES.ADMIN) {
+    throw ApiError.forbidden(
+      'Admin role cannot be assigned during registration. Admin users can only be created by administrators through the database.'
+    );
+  }
+
+  // Validate role is in registrable roles
+  if (!REGISTRABLE_ROLES.includes(role)) {
+    throw ApiError.badRequest(
+      `Invalid role. Only the following roles can be registered: ${REGISTRABLE_ROLES.join(', ')}`
+    );
+  }
+
   // Check if email already exists
   const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {

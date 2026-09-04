@@ -170,8 +170,11 @@ const createProduct = async (productData, file) => {
     throw ApiError.conflict(`A product with SKU '${sku}' already exists.`);
   }
 
+  // Normalize category to lowercase (handle title case from frontend)
+  const normalizedCategory = category ? category.toLowerCase() : CATEGORIES.GENERAL;
+
   // If Tech category, verify unique serialNumber
-  if (category === CATEGORIES.TECH && serialNumber) {
+  if (normalizedCategory === CATEGORIES.TECH && serialNumber) {
     const existingSerial = await TechDetail.findOne({ where: { serialNumber } });
     if (existingSerial) {
       throw ApiError.conflict(
@@ -189,7 +192,7 @@ const createProduct = async (productData, file) => {
         sku,
         name,
         description,
-        category,
+        category: normalizedCategory,
         price,
         quantityInStock: quantityInStock || 0,
         reorderThreshold: reorderThreshold || 5,
@@ -200,7 +203,7 @@ const createProduct = async (productData, file) => {
     );
 
     // Create corresponding 1:1 category details
-    if (category === CATEGORIES.FRAGILE) {
+    if (normalizedCategory === CATEGORIES.FRAGILE) {
       await FragileDetail.create(
         {
           productId: newProduct.id,
@@ -209,7 +212,7 @@ const createProduct = async (productData, file) => {
         },
         { transaction: t }
       );
-    } else if (category === CATEGORIES.COLD) {
+    } else if (normalizedCategory === CATEGORIES.COLD) {
       await ColdDetail.create(
         {
           productId: newProduct.id,
@@ -218,7 +221,7 @@ const createProduct = async (productData, file) => {
         },
         { transaction: t }
       );
-    } else if (category === CATEGORIES.TECH) {
+    } else if (normalizedCategory === CATEGORIES.TECH) {
       await TechDetail.create(
         {
           productId: newProduct.id,
@@ -227,7 +230,7 @@ const createProduct = async (productData, file) => {
         },
         { transaction: t }
       );
-    } else if (category === CATEGORIES.CLEANING) {
+    } else if (normalizedCategory === CATEGORIES.CLEANING) {
       await CleaningDetail.create(
         {
           productId: newProduct.id,

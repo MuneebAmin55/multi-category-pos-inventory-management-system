@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -188,6 +188,14 @@ const LoginPage = () => {
               )}
             </button>
           </form>
+
+          {/* Registration Link */}
+          <p className="text-center text-slate-400 text-xs mt-6">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium">
+              Register here
+            </Link>
+          </p>
         </div>
 
         {/* Footer */}

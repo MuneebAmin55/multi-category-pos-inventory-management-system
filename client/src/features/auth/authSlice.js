@@ -4,11 +4,38 @@
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { loginUser as loginAPI, getMe as getMeAPI } from '@/services/authService';
+import {
+  loginUser as loginAPI,
+  registerUser as registerAPI,
+  getMe as getMeAPI,
+} from '@/services/authService';
 
 // ============================================================================
 // Async Thunks
 // ============================================================================
+
+/**
+ * Register thunk — calls POST /api/auth/register, stores token + user.
+ */
+export const registerThunk = createAsyncThunk(
+  'auth/register',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await registerAPI(userData);
+      // Backend responds with { success, message, data: { user, token } }
+      const { user, token } = response.data;
+
+      // Persist token in localStorage for Axios interceptor
+      localStorage.setItem('token', token);
+
+      return { user, token };
+    } catch (error) {
+      const message =
+        error.response?.data?.message || error.message || 'Registration failed. Please try again.';
+      return rejectWithValue(message);
+    }
+  }
+);
 
 /**
  * Login thunk — calls POST /api/auth/login, stores token + user.
@@ -101,6 +128,26 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // ── Register ──
+      .addCase(registerThunk.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(registerThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+      })
+
       // ── Login ──
       .addCase(loginThunk.pending, (state) => {
         state.isLoading = true;

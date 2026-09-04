@@ -4,7 +4,7 @@
  */
 
 const { body } = require('express-validator');
-const { ALL_ROLES } = require('../constants/roles.constant');
+const { ALL_ROLES, REGISTRABLE_ROLES } = require('../constants/roles.constant');
 
 const validateRegister = [
   body('name')
@@ -28,10 +28,22 @@ const validateRegister = [
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long'),
 
+  body('confirmPassword')
+    .notEmpty()
+    .withMessage('Confirm Password is required')
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    }),
+
   body('role')
-    .optional()
-    .isIn(ALL_ROLES)
-    .withMessage(`Role must be one of: ${ALL_ROLES.join(', ')}`),
+    .trim()
+    .notEmpty()
+    .withMessage('Role is required')
+    .isIn(REGISTRABLE_ROLES)
+    .withMessage(`Role must be one of: ${REGISTRABLE_ROLES.join(', ')}. Admin role cannot be assigned during registration.`),
 ];
 
 const validateLogin = [

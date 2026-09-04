@@ -1,14 +1,15 @@
 /**
  * @file constants/categories.constant.js
  * @description System product categories and category classification definitions.
+ * NOTE: Values are lowercase to match PostgreSQL ENUM type definitions.
  */
 
 const CATEGORIES = {
-  FRAGILE: 'Fragile',
-  COLD: 'Cold',
-  TECH: 'Tech',
-  CLEANING: 'Cleaning',
-  GENERAL: 'General',
+  FRAGILE: 'fragile',
+  COLD: 'cold',
+  TECH: 'tech',
+  CLEANING: 'cleaning',
+  GENERAL: 'general',
 };
 
 const ALL_CATEGORIES = Object.values(CATEGORIES);
